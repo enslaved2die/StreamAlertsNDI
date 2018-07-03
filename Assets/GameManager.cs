@@ -2,28 +2,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-    public InputField apiKeyField;
+    public TMP_InputField apiKeyField;
 
     [Header("API Settings")]
     public string API_KEY;
     public const string URL = "https://api.tipeeestream.com/v1.0/";
     public int limit;
-    public Text foreverText, responseText;
     public float UpdateRate = 1;
     float TimeHolder;
     [Header("Info Fields")]
-    public Text Follower;
-    public RootObject requestdata;
-
+    public TextMeshProUGUI Follower, Subscriptions, Donations, Cheers, YTSubs;
 
     private void Start()
     {
-        SetApiKey();
+        if (API_KEY != null)
+        {
+            Request();
+        }
     }
-
     public void SetApiKey()
     {
         API_KEY = apiKeyField.text;
@@ -37,65 +37,79 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        TimeHolder += Time.deltaTime;
-        if (TimeHolder >= UpdateRate)
+        if (API_KEY != null)
         {
-            Request();
-            TimeHolder = 0;
+            TimeHolder += Time.deltaTime;
+            if (TimeHolder >= UpdateRate)
+            {
+                Request();
+                TimeHolder = 0;
+            }
         }
+
     }
 
     public void Request()
     {
         //WWW request = new WWW(URL + "events.json?apiKey=" + API_KEY + "&type[]=follow&type[]=donation&type[]=subscription&limit" + limit);
         WWW foreverRequest = new WWW(URL + "events/forever.json?apiKey=" + API_KEY);
-        StartCoroutine(OnResponse(foreverRequest, foreverText));
+        StartCoroutine(OnResponse(foreverRequest));
         //StartCoroutine(OnResponse(request, responseText));
     }
 
-    private IEnumerator OnResponse(WWW req, Text text)
+    private IEnumerator OnResponse(WWW req)
     {
         yield return req;
-        text.text = req.text;
         requestdata = JsonUtility.FromJson<RootObject>(req.text);
-        //Debug.Log(requestdata.datas.details.twitch.followers);
+        SetInfo();
     }
 
-    public class Hitbox
+    public RootObject requestdata;
+
+    public void SetInfo()
     {
-        public string followers { get; set; }
+        Follower.text = requestdata.datas.details.twitch.followers.ToString();
+        Subscriptions.text = requestdata.datas.subscribers.ToString();
+        Donations.text = requestdata.datas.donations.ToString() + "€";
+        Cheers.text = requestdata.datas.cheers.ToString() + " (" + requestdata.datas.cheers / 100 + "€)";
+        YTSubs.text = requestdata.datas.details.youtube.followers.ToString();
     }
 
-    public class Twitch
+    [System.Serializable]
+    public struct Hitbox
     {
-        public int followers { get; set; }
+        public string followers;
     }
-
-    public class Youtube
+    [System.Serializable]
+    public struct Twitch
     {
-        public int followers { get; set; }
+        public int followers;
     }
-
-    public class Details
+    [System.Serializable]
+    public struct Youtube
     {
-        public Hitbox hitbox { get; set; }
-        public Twitch twitch { get; set; }
-        public Youtube youtube { get; set; }
+        public int followers;
     }
-
-    public class Datas
+    [System.Serializable]
+    public struct Details
     {
-        public int subscribers { get; set; }
-        public int followers { get; set; }
-        public double donations { get; set; }
-        public int cheers { get; set; }
-        public Details details { get; set; }
+        public Hitbox hitbox;
+        public Twitch twitch;
+        public Youtube youtube;
     }
-
-    public class RootObject
+    [System.Serializable]
+    public struct Datas
     {
-        public string message { get; set; }
-        public Datas datas { get; set; }
+        public int subscribers;
+        public int followers;
+        public double donations;
+        public int cheers;
+        public Details details;
     }
-
+    [System.Serializable]
+    public struct RootObject
+    {
+        public string message;
+        public Datas datas;
+    }
 }
