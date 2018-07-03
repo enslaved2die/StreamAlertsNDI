@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,15 +15,20 @@ public class GameManager : MonoBehaviour
     public float UpdateRate = 1;
     float TimeHolder;
     [Header("Info Fields")]
-    public TextMeshProUGUI Follower, Subscriptions, Donations, Cheers, YTSubs;
+    public TextMeshProUGUI Follower;
+    public TextMeshProUGUI Subscriptions, Donations, Cheers, YTSubs;
 
-    //void Awake()
-    //{
-    //    if (PlayerPrefs.GetString("API_KEY") != null)
-    //    {
-    //        API_KEY = PlayerPrefs.GetString("API_KEY");
-    //    }
-    //}
+    [ContextMenu("Clear API Key")]
+    public void ClearAPI_KEY()
+    {
+        PlayerPrefs.DeleteKey("API_KEY");
+    }
+
+    void Awake()
+    {
+        apiKeyField.text = PlayerPrefs.GetString("API_KEY");
+        API_KEY = apiKeyField.text;
+    }
 
     private void Start()
     {
@@ -35,11 +40,8 @@ public class GameManager : MonoBehaviour
     public void SetApiKey()
     {
         API_KEY = apiKeyField.text;
-        //if(PlayerPrefs.GetString("API_KEY") == null)
-        //{
-        //    PlayerPrefs.SetString("API_KEY", API_KEY);
-        //    PlayerPrefs.Save();
-        //}
+            PlayerPrefs.SetString("API_KEY", API_KEY);
+            PlayerPrefs.Save();
         Request();
     }
 
@@ -125,4 +127,5 @@ public class GameManager : MonoBehaviour
         public string message;
         public Datas datas;
     }
+
 }
