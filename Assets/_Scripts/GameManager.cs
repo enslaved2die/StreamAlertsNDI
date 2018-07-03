@@ -1,8 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
@@ -40,8 +38,8 @@ public class GameManager : MonoBehaviour
     public void SetApiKey()
     {
         API_KEY = apiKeyField.text;
-            PlayerPrefs.SetString("API_KEY", API_KEY);
-            PlayerPrefs.Save();
+        PlayerPrefs.SetString("API_KEY", API_KEY);
+        PlayerPrefs.Save();
         Request();
     }
 
