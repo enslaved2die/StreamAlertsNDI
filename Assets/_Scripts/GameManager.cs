@@ -81,28 +81,6 @@ static class Extensions
 
 public class GameManager : MonoBehaviour
 {
-    private const string INDENT_STRING = "    ";
-
-    static string FormatJson(string json)
-    {
-
-        int indentation = 0;
-        int quoteCount = 0;
-        var result =
-            from ch in json
-            let quotes = ch == '"' ? quoteCount++ : quoteCount
-            let lineBreak = ch == ',' && quotes % 2 == 0 ? ch + Environment.NewLine + String.Concat(Enumerable.Repeat(INDENT_STRING, indentation)) : null
-            let openChar = ch == '{' || ch == '[' ? ch + Environment.NewLine + String.Concat(Enumerable.Repeat(INDENT_STRING, ++indentation)) : ch.ToString()
-            let closeChar = ch == '}' || ch == ']' ? Environment.NewLine + String.Concat(Enumerable.Repeat(INDENT_STRING, --indentation)) + ch : ch.ToString()
-            select lineBreak == null
-                        ? openChar.Length > 1
-                            ? openChar
-                            : closeChar
-                        : lineBreak;
-
-        return String.Concat(result);
-    }
-
     public TMP_InputField apiKeyField;
 
     [Header("API Settings")]
@@ -122,6 +100,7 @@ public class GameManager : MonoBehaviour
     public Subscription subscription;
     public Donation donation;
     public Host host;
+    public GameObject saveArea;
 
     [Header("Requested Data")]
     public RootObject foreverData;
@@ -175,6 +154,7 @@ public class GameManager : MonoBehaviour
         lastEventID = PlayerPrefs.GetInt("lastEventID");
         apiKeyField.text = API_KEY;
         lastEventIDField.text = lastEventID.ToString();
+        saveArea.SetActive(false);
     }
     private void Start()
     {
@@ -246,55 +226,107 @@ public class GameManager : MonoBehaviour
 
             if (eventData.datas.items[0].type.Equals("subscription"))
             {
-                SubscriptionAlert();
+                ActivateAlert(alertState.subs);
             }
 
             if (eventData.datas.items[0].type.Equals("follow"))
             {
-                FollowerAlert();
+                ActivateAlert(alertState.follow);
             }
 
             if (eventData.datas.items[0].type.Equals("donation"))
             {
-                DonationAlert();
+                ActivateAlert(alertState.donation);
             }
 
             if (eventData.datas.items[0].type.Equals("hosting"))
             {
-                HostAlert();
+                ActivateAlert(alertState.host);
             }
         }
 
     }
     #endregion
 
-    #region AlertFunctions
+    #region AlertStates
 
-    void SubscriptionAlert()
+    //void SubscriptionAlert()
+    //{
+    //    subscription.User.text = eventData.datas.items[0].parameters.username;
+    //    subscription.Message.text = eventData.datas.items[0].parameters.message;
+    //    Debug.Log("Subscription");
+    //}
+
+    //void DonationAlert()
+    //{
+    //    donation.User.text = eventData.datas.items[0].parameters.username;
+    //    donation.Message.text = eventData.datas.items[0].parameters.message;
+    //    Debug.Log("Donation");
+    //}
+
+    //void FollowerAlert()
+    //{
+    //    follower.User.text = eventData.datas.items[0].parameters.username;
+    //    Debug.Log("Follower");
+    //}
+
+    //void HostAlert()
+    //{
+    //    host.User.text = eventData.datas.items[0].parameters.username;
+    //    Debug.Log("Host");
+    //}
+
+    public enum alertState { subs, follow, donation, host }
+
+    void ActivateAlert(alertState alertState)
     {
-        subscription.User.text = eventData.datas.items[0].parameters.username;
-        subscription.Message.text = eventData.datas.items[0].parameters.message;
+        switch (alertState)
+        {
+            case alertState.subs:
 
-        Debug.Log("Subscription");
-    }
+                subscription.Root.SetActive(true);
+                follower.Root.SetActive(false);
+                donation.Root.SetActive(false);
+                host.Root.SetActive(false);
 
-    void DonationAlert()
-    {
-        donation.User.text = eventData.datas.items[0].parameters.username;
-        donation.Message.text = eventData.datas.items[0].parameters.message;
-        Debug.Log("Donation");
-    }
+                subscription.User.text = eventData.datas.items[0].parameters.username;
+                subscription.Message.text = eventData.datas.items[0].parameters.message;
+                Debug.Log("Subscription");
+                break;
+            case alertState.follow:
 
-    void FollowerAlert()
-    {
-        follower.User.text = eventData.datas.items[0].parameters.username;
-        Debug.Log("Follower");
-    }
+                subscription.Root.SetActive(false);
+                follower.Root.SetActive(true);
+                donation.Root.SetActive(false);
+                host.Root.SetActive(false);
 
-    void HostAlert()
-    {
-        host.User.text = eventData.datas.items[0].parameters.username;
-        Debug.Log("Host");
+                follower.User.text = eventData.datas.items[0].parameters.username;
+                Debug.Log("Follower");
+                break;
+            case alertState.donation:
+
+                subscription.Root.SetActive(false);
+                follower.Root.SetActive(false);
+                donation.Root.SetActive(true);
+                host.Root.SetActive(false);
+
+                donation.User.text = eventData.datas.items[0].parameters.username;
+                donation.Message.text = eventData.datas.items[0].parameters.message;
+                Debug.Log("Donation");
+                break;
+            case alertState.host:
+
+                subscription.Root.SetActive(false);
+                follower.Root.SetActive(false);
+                donation.Root.SetActive(false);
+                host.Root.SetActive(true);
+
+                host.User.text = eventData.datas.items[0].parameters.username;
+                Debug.Log("Host");
+                break;
+            default:
+                break;
+        }
     }
 
     #endregion
