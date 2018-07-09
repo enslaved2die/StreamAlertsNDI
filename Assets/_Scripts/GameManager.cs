@@ -101,7 +101,7 @@ public class GameManager : MonoBehaviour
     [Space]
     public Toggle followToggle;
     public Toggle subsToggle, donationToggle, hostsToggle;
-    public bool subsActive, followsActive, donationsActive, hostsActive;
+    private bool subsActive, followsActive, donationsActive, hostsActive;
     private bool initialized = false;
 
     [Header("Alerts")]
