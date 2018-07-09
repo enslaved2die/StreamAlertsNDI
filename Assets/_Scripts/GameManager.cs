@@ -308,7 +308,7 @@ public class GameManager : MonoBehaviour
             {
                 ActivateAlert(alertState.subs);
 
-                if (lastEvents.Count > 4)
+                if (lastEvents.Count > 3)
                 {
                     Destroy(lastEvents.First<LastEvent>().Holder);
                     lastEvents.RemoveAt(0);
@@ -336,7 +336,7 @@ public class GameManager : MonoBehaviour
             {
                 ActivateAlert(alertState.follow);
 
-                if (lastEvents.Count > 4)
+                if (lastEvents.Count > 3)
                 {
                     Destroy(lastEvents.First<LastEvent>().Holder);
                     lastEvents.RemoveAt(0);
@@ -363,7 +363,7 @@ public class GameManager : MonoBehaviour
             {
                 ActivateAlert(alertState.donation);
 
-                if (lastEvents.Count > 4)
+                if (lastEvents.Count > 3)
                 {
                     Destroy(lastEvents.First<LastEvent>().Holder);
                     lastEvents.RemoveAt(0);
@@ -390,7 +390,7 @@ public class GameManager : MonoBehaviour
             {
                 ActivateAlert(alertState.host);
 
-                if (lastEvents.Count > 4)
+                if (lastEvents.Count > 3)
                 {
                     Destroy(lastEvents.First<LastEvent>().Holder);
                     lastEvents.RemoveAt(0);
